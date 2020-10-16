@@ -3,15 +3,17 @@ package v1.car
 import javax.inject.{Inject, Singleton}
 import java.util.Date
 import java.text.SimpleDateFormat
+import java.util.UUID
 
 import akka.actor.ActorSystem
 import play.api.libs.concurrent.CustomExecutionContext
 import play.api.{Logger, MarkerContext}
 
 import scala.concurrent.Future
+import scala.collection.mutable
 
 
-final case class CarData(id: Int, title: String, fuel: Int, price: Int, isnew: Boolean, mileage: Option[Int], first_registration: Option[Date])
+final case class CarData(id: UUID, title: String, fuel: Int, price: Int, isnew: Boolean, mileage: Option[Int], first_registration: Option[Date])
 
 class CarExecutionContext @Inject()(actorSystem: ActorSystem)
     extends CustomExecutionContext(actorSystem, "repository.dispatcher")
@@ -20,11 +22,15 @@ class CarExecutionContext @Inject()(actorSystem: ActorSystem)
   * A pure non-blocking interface for the CarRepository.
   */
 trait CarRepository {
-  def create(data: CarData)(implicit mc: MarkerContext): Future[Int]
+  def create(data: CarData)(implicit mc: MarkerContext): Future[UUID]
 
   def list()(implicit mc: MarkerContext): Future[Iterable[CarData]]
 
-  def get(id: Int)(implicit mc: MarkerContext): Future[Option[CarData]]
+  def get(id: UUID)(implicit mc: MarkerContext): Future[Option[CarData]]
+
+  // def delete(id: UUID)(implicit mc: MarkerContext): Future[UUID]
+
+  // def update(id:UUID)(implicit mc: MarkerContext): Future[Option[CarData]]
 }
 
 /**
@@ -43,12 +49,12 @@ class CarRepositoryImpl @Inject()()(implicit ec: CarExecutionContext)
   // define date format
   val format = new SimpleDateFormat("yyyy-mm-dd") 
  
-  private val carList = List(
-    CarData(1, "Audi A4 Avant", 1, 34848, true, None, None),
-    CarData(2, "Nissan GT-R", 0, 104293, true, None, None),
-    CarData(3, "Mercedez-Benz G 65 AMG", 0, 155880, false, Some(8703), Some(format.parse("2012-10-1"))),
-    CarData(4, "Tesla Model S", 1, 64990, false, Some(71820), Some(format.parse("2012-10-1"))),
-    CarData(5, "Audi e-tron", 1, 53926, true, None, None)
+  private val carList = mutable.ListBuffer(
+    CarData(UUID.randomUUID(), "Audi A4 Avant", 1, 34848, true, None, None),
+    CarData(UUID.randomUUID(), "Nissan GT-R", 0, 104293, true, None, None),
+    CarData(UUID.randomUUID(), "Mercedez-Benz G 65 AMG", 0, 155880, false, Some(8703), Some(format.parse("2012-10-1"))),
+    CarData(UUID.randomUUID(), "Tesla Model S", 1, 64990, false, Some(71820), Some(format.parse("2012-10-1"))),
+    CarData(UUID.randomUUID(), "Audi e-tron", 1, 53926, true, None, None)
   )
 
   override def list()(
@@ -59,7 +65,7 @@ class CarRepositoryImpl @Inject()()(implicit ec: CarExecutionContext)
     }
   }
 
-  override def get(id: Int)(
+  override def get(id: UUID)(
       implicit mc: MarkerContext): Future[Option[CarData]] = {
     Future {
       logger.trace(s"get: id = $id")
@@ -67,11 +73,13 @@ class CarRepositoryImpl @Inject()()(implicit ec: CarExecutionContext)
     }
   }
 
-  def create(data: CarData)(implicit mc: MarkerContext): Future[Int] = {
+  override def create(data: CarData)(implicit mc: MarkerContext): Future[UUID] = {
     Future {
       logger.trace(s"create: data = $data")
-      data.id
+      carList+=data
+      data.id 
     }
   }
+
 
 }

@@ -2,6 +2,10 @@ package v1.car
 
 import javax.inject.{Inject, Provider}
 import java.util.Date
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.UUID
+
 
 import play.api.MarkerContext
 
@@ -13,7 +17,7 @@ import play.api.data.format.Formats.dateFormat
 /**
   * DTO for displaying car information.
   */
-case class CarResource(id: String, title: String, fuel: String, price: String, isnew: String, mileage: Option[String], first_registration: Option[Date])
+case class CarResource(id: String, title: String, fuel: String, price: String, isnew: String, mileage: Option[Int], first_registration: Option[Date])
 
 object CarResource {
   /**
@@ -32,8 +36,7 @@ class CarResourceHandler @Inject()(
 
   def create(carInput: CarFormInput)(
       implicit mc: MarkerContext): Future[CarResource] = {
-    val data = CarData(999, carInput.title, carInput.price, carInput.fuel, carInput.isnew, carInput.mileage, carInput.first_registration)
-    // We don't actually create the car, so return what we have
+    val data = CarData(UUID.randomUUID, carInput.title, carInput.price, carInput.fuel, carInput.isnew, carInput.mileage, carInput.first_registration)
     carRepository.create(data).map { id =>
       createCarResource(data)
     }
@@ -41,7 +44,7 @@ class CarResourceHandler @Inject()(
 
   def lookup(id: String)(
       implicit mc: MarkerContext): Future[Option[CarResource]] = {
-    val carFuture = carRepository.get(Integer.parseInt(id))
+    val carFuture = carRepository.get(UUID.fromString(id))
     carFuture.map { maybeCarData => 
       maybeCarData.map { carData =>
         createCarResource(carData)
@@ -56,7 +59,7 @@ class CarResourceHandler @Inject()(
   }
 
   private def createCarResource(c: CarData): CarResource = {
-    CarResource(c.id.toString(), c.title, c.price.toString(), c.fuel.toString(), c.isnew.toString(), Some(c.mileage.toString()), c.first_registration)
+    CarResource(c.id.toString(), c.title, c.fuel.toString(), c.price.toString(), c.isnew.toString(), c.mileage, c.first_registration)
   }
 
 }
