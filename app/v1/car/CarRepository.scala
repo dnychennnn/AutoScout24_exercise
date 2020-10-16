@@ -28,7 +28,7 @@ trait CarRepository {
 
   def get(id: UUID)(implicit mc: MarkerContext): Future[Option[CarData]]
 
-  // def delete(id: UUID)(implicit mc: MarkerContext): Future[UUID]
+  def delete(id: UUID)(implicit mc: MarkerContext): Future[Iterable[CarData]]
 
   // def update(id:UUID)(implicit mc: MarkerContext): Future[Option[CarData]]
 }
@@ -81,5 +81,12 @@ class CarRepositoryImpl @Inject()()(implicit ec: CarExecutionContext)
     }
   }
 
+  override def delete(id: UUID)(implicit mc: MarkerContext): Future[Iterable[CarData]] = {
+    Future {
+      logger.trace(s"delete: id = $id")
+      val car = carList.find(car => car.id == id) 
+      carList-=car.getOrElse(throw new RuntimeException("No such car to be deleted!"))
+    }
+  }
 
 }

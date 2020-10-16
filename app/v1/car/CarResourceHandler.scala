@@ -58,6 +58,14 @@ class CarResourceHandler @Inject()(
     }
   }
 
+  def delete(id:String)(
+      implicit mc: MarkerContext): Future[Option[CarResource]] = {
+    val carFuture = carRepository.delete(UUID.fromString(id))
+    carFuture.map{ id =>
+      None
+    }
+  }
+
   private def createCarResource(c: CarData): CarResource = {
     CarResource(c.id.toString(), c.title, c.fuel.toString(), c.price.toString(), c.isnew.toString(), c.mileage, c.first_registration)
   }

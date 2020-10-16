@@ -64,6 +64,13 @@ class CarController @Inject()(cc: CarControllerComponents)(
     processJsonCar()
   }
 
+  def delete(id:String): Action[AnyContent] = CarAction.async { implicit request =>
+    logger.trace("delete: id = $id")
+    carResourceHandler.delete(id).map { car =>
+      NoContent
+    }
+  }
+
   private def processJsonCar[A]()(
       implicit request: CarRequest[A]): Future[Result] = {
     def failure(badForm: Form[CarFormInput]) = {
