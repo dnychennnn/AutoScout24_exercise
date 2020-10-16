@@ -1,4 +1,4 @@
-package v1.post
+package v1.car
 
 import javax.inject.Inject
 
@@ -11,17 +11,17 @@ import play.api.mvc._
 import scala.concurrent.{ExecutionContext, Future}
 
 /**
-  * A wrapped request for post resources.
+  * A wrapped request for car resources.
   *
   * This is commonly used to hold request-specific information like
   * security credentials, and useful shortcut methods.
   */
-trait PostRequestHeader
+trait CarRequestHeader
     extends MessagesRequestHeader
     with PreferredMessagesProvider
-class PostRequest[A](request: Request[A], val messagesApi: MessagesApi)
+class CarRequest[A](request: Request[A], val messagesApi: MessagesApi)
     extends WrappedRequest(request)
-    with PostRequestHeader
+    with CarRequestHeader
 
 /**
   * Provides an implicit marker that will show the request in all logger statements.
@@ -46,33 +46,33 @@ trait RequestMarkerContext {
 }
 
 /**
-  * The action builder for the Post resource.
+  * The action builder for the Car resource.
   *
   * This is the place to put logging, metrics, to augment
   * the request with contextual data, and manipulate the
   * result.
   */
-class PostActionBuilder @Inject()(messagesApi: MessagesApi,
+class CarActionBuilder @Inject()(messagesApi: MessagesApi,
                                   playBodyParsers: PlayBodyParsers)(
     implicit val executionContext: ExecutionContext)
-    extends ActionBuilder[PostRequest, AnyContent]
+    extends ActionBuilder[CarRequest, AnyContent]
     with RequestMarkerContext
     with HttpVerbs {
 
   override val parser: BodyParser[AnyContent] = playBodyParsers.anyContent
 
-  type PostRequestBlock[A] = PostRequest[A] => Future[Result]
+  type CarRequestBlock[A] = CarRequest[A] => Future[Result]
 
   private val logger = Logger(this.getClass)
 
   override def invokeBlock[A](request: Request[A],
-                              block: PostRequestBlock[A]): Future[Result] = {
+                              block: CarRequestBlock[A]): Future[Result] = {
     // Convert to marker context and use request in block
     implicit val markerContext: MarkerContext = requestHeaderToMarkerContext(
       request)
     logger.trace(s"invokeBlock: ")
 
-    val future = block(new PostRequest(request, messagesApi))
+    val future = block(new CarRequest(request, messagesApi))
 
     future.map { result =>
       request.method match {
@@ -86,14 +86,14 @@ class PostActionBuilder @Inject()(messagesApi: MessagesApi,
 }
 
 /**
-  * Packages up the component dependencies for the post controller.
+  * Packages up the component dependencies for the car controller.
   *
   * This is a good way to minimize the surface area exposed to the controller, so the
   * controller only has to have one thing injected.
   */
-case class PostControllerComponents @Inject()(
-    postActionBuilder: PostActionBuilder,
-    postResourceHandler: PostResourceHandler,
+case class CarControllerComponents @Inject()(
+    carActionBuilder: CarActionBuilder,
+    carResourceHandler: CarResourceHandler,
     actionBuilder: DefaultActionBuilder,
     parsers: PlayBodyParsers,
     messagesApi: MessagesApi,
@@ -103,14 +103,14 @@ case class PostControllerComponents @Inject()(
     extends ControllerComponents
 
 /**
-  * Exposes actions and handler to the PostController by wiring the injected state into the base class.
+  * Exposes actions and handler to the CarController by wiring the injected state into the base class.
   */
-class PostBaseController @Inject()(pcc: PostControllerComponents)
+class CarBaseController @Inject()(pcc: CarControllerComponents)
     extends BaseController
     with RequestMarkerContext {
   override protected def controllerComponents: ControllerComponents = pcc
 
-  def PostAction: PostActionBuilder = pcc.postActionBuilder
+  def CarAction: CarActionBuilder = pcc.carActionBuilder
 
-  def postResourceHandler: PostResourceHandler = pcc.postResourceHandler
+  def carResourceHandler: CarResourceHandler = pcc.carResourceHandler
 }
