@@ -33,9 +33,12 @@ This solution is backboned by Scala Play REST API example. Some key features reg
         - data storage using ListBuffer, some other data structure like heap or tree like can be considered.
 2. Data fields: mostly using primitive types
     - improvements: 
-        - Need to clarify how to properly use DateTime in Scala. (Didn't try joda)
+        - How to properly use DateTime in Scala? (Didn't try joda)
 3. APIs are implemented following MVC structure, where `CarController` describes all of the features
     - validation: using play **Form** with verifying to check the used car dependencies.
+    - improvements:
+        - For modify API, how to correctly use option which also impose constraint to other field?
+        - **modify**: use var for case class(not suggested for case class to be mutable), a better way?
  
     
 ### Future work
