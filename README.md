@@ -1,10 +1,52 @@
-# Play REST API
+# AUTOSCOUT24 Technical Exercise
 
-This is the example project for [Making a REST API in Play](http://developer.lightbend.com/guides/play-rest-api/index.html).
+## Task Description
 
-## Appendix
+Car adverts should have the following fields:
+* **id** (_required_): **int** or **guid**, choose whatever is more convenient for you;
+* **title** (_required_): **string**, e.g. _"Audi A4 Avant"_;
+* **fuel** (_required_): gasoline or diesel, use some type which could be extended in the future by adding additional fuel types;
+* **price** (_required_): **integer**;
+* **new** (_required_): **boolean**, indicates if car is new or used;
+* **mileage** (_only for used cars_): **integer**;
+* **first registration** (_only for used cars_): **date** without time.
 
-### Running
+Service should:
+* have functionality to return list of all car adverts;
+  * optional sorting by any field specified by query parameter, default sorting - by **id**;
+* have functionality to return data for single car advert by id;
+* have functionality to add car advert;
+* have functionality to modify car advert by id;
+* have functionality to delete car advert by id;
+* have validation (see required fields and fields only for used cars);
+* accept and return data in JSON format, use standard JSON date format for the **first registration** field.
+
+## Solution Description
+This solution is backboned by Scala Play REST API example. Some key features regarding the solution is described as follows,
+
+### Solved
+1. Local storage is a mock DB class `CarRespository` with a `CarResourceHandler` for data I/O
+    - shortage: 
+        - data in RAM not in disk
+        - didn't practice Amazon Dynamo DB or any other kinds.
+    - improvements: 
+        - data storage using ListBuffer, some other data structure like heap or tree like can be considered.
+2. APIs are implemented following MVC structure, where `CarController` describes all of the features
+    - validation: using play **Form** with verifying to check the used car dependencies.
+3. 
+    
+### Passed
+
+1. CORS
+2. test
+3. Amazon Dynamo DB
+
+
+## Installation & Running
+
+### Requirements
+- java higher than 8
+- sbt
 
 You need to download and install sbt for this application to run.
 
@@ -16,56 +58,45 @@ sbt run
 
 Play will start up on the HTTP port at <http://localhost:9000/>.   You don't need to deploy or reload anything -- changing any source code while the server is running will automatically recompile and hot-reload the application on the next HTTP request.
 
-### Usage
+## Usage
 
 If you call the same URL from the command line, you’ll see JSON. Using [httpie](https://httpie.org/), we can execute the command:
 
-```bash
-http --verbose http://localhost:9000/v1/posts
-```
 
+**LIST** : To list all cars (defaul sorted by id)
+```bash
+http --verbose http://localhost:9000/v1/cars
+```
 and get back:
 
 ```routes
-GET /v1/posts HTTP/1.1
+GET /v1/cars HTTP/1.1
 ```
 
-Likewise, you can also send a POST directly as JSON:
-
+**LIST with query** : To list cars with optional sorting by field, e.g. price
 ```bash
-http --verbose POST http://localhost:9000/v1/posts title="hello" body="world"
+http --verbose http://localhost:9000/v1/cars/?sort_by=price
 ```
-
-and get:
+and get back(example):
 
 ```routes
-POST /v1/posts HTTP/1.1
+GET /v1/cars/?sort_by=price HTTP/1.1 
 ```
 
-### Load Testing
-
-The best way to see what Play can do is to run a load test.  We've included Gatling in this test project for integrated load testing.
-
-Start Play in production mode, by [staging the application](https://www.playframework.com/documentation/2.5.x/Deploying) and running the play script:s
-
+**GET single car advert**: To return a single car advert using GET request
 ```bash
-sbt stage
-cd target/universal/stage
-./bin/play-scala-rest-api-example -Dplay.http.secret.key=some-long-key-that-will-be-used-by-your-application
+http --verbose http://localhost:9000/v1/cars/id
 ```
 
-Then you'll start the Gatling load test up (it's already integrated into the project):
-
+**ADD car advert** : To add car advert with POST request
 ```bash
-sbt ";project gatling;gatling:test"
+http --verbose POST http://localhost:9000/v1/cars title="abc" fuel=0 price=12341234 isnew=true
 ```
 
-For best results, start the gatling load test up on another machine so you do not have contending resources.  You can edit the [Gatling simulation](http://gatling.io/docs/2.2.2/general/simulation_structure.html#simulation-structure), and change the numbers as appropriate.
-
-Once the test completes, you'll see an HTML file containing the load test chart:
-
+**DELETE car advert** : To delete car advert by **id** with DELETE request, e.g., delete "Audi e-tron"(uuid = 77144954-beff-410b-9dff-a39e259a2ac0)
 ```bash
-./play-scala-rest-api-example/target/gatling/gatlingspec-1472579540405/index.html
+http --verbose DELETE http://localhost:9000/v1/cars/"77144954-beff-410b-9dff-a39e259a2ac0"
 ```
 
-That will contain your load test results.
+**MODIFY**
+Pass
