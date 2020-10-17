@@ -14,6 +14,7 @@ import scala.collection.mutable
 
 
 final case class CarData(id: UUID, title: String, fuel: Int, price: Int, isnew: Boolean, mileage: Option[Int], first_registration: Option[Date])
+final case class CarUpdate(id: UUID, title: Option[String], fuel: Option[Int], price: Option[Int], isnew: Option[Boolean], mileage: Option[Int], first_registration: Option[Date])
 
 class CarExecutionContext @Inject()(actorSystem: ActorSystem)
     extends CustomExecutionContext(actorSystem, "repository.dispatcher")
@@ -24,7 +25,7 @@ class CarExecutionContext @Inject()(actorSystem: ActorSystem)
 trait CarRepository {
   def create(data: CarData)(implicit mc: MarkerContext): Future[UUID]
 
-  def list()(implicit mc: MarkerContext): Future[Iterable[CarData]]
+  def list(attr: String)(implicit mc: MarkerContext): Future[Iterable[CarData]]
 
   def get(id: UUID)(implicit mc: MarkerContext): Future[Option[CarData]]
 
@@ -57,11 +58,16 @@ class CarRepositoryImpl @Inject()()(implicit ec: CarExecutionContext)
     CarData(UUID.randomUUID(), "Audi e-tron", 1, 53926, true, None, None)
   )
 
-  override def list()(
+  override def list(attr: String)(
       implicit mc: MarkerContext): Future[Iterable[CarData]] = {
     Future {
-      logger.trace(s"list: ")
-      carList
+      logger.trace(s"list sort by: $attr")
+      attr match {
+        case "id" => carList.sortBy(car => car.id)
+        case "title" => carList.sortBy(car => car.title)
+        case "fuel" => carList.sortBy(car => car.fuel)
+        case "price" => carList.sortBy(car => car.price) 
+      }
     }
   }
 
@@ -89,4 +95,11 @@ class CarRepositoryImpl @Inject()()(implicit ec: CarExecutionContext)
     }
   }
 
+  // override def update(id:UUID, data: CarData)(implicit mc: MarkerContext): Future[Option[CarData]] = {
+  //   Future {
+  //     logger.trace(s"update: id = $id")
+  //     val car = carList.find(car => car.id == id)   
+  //     carList.replace(carList.indexOf(car), data)
+  //   }
+  // }
 }

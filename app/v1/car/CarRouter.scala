@@ -18,10 +18,10 @@ class CarRouter @Inject()(controller: CarController) extends SimpleRouter {
     url.toString()
   }
 
-  override def routes: Routes = {
-    case GET(p"/") =>
-      controller.index
-
+  override def routes: Routes = { 
+    case GET(p"/" ? q_o"sort_by=$sort_by") =>
+      controller.index(sort_by: Option[String])
+ 
     case POST(p"/") =>
       controller.process
 
@@ -30,6 +30,9 @@ class CarRouter @Inject()(controller: CarController) extends SimpleRouter {
       
     case DELETE(p"/$id") =>
       controller.delete(id)
+
+    // case PUT(p"/$id") =>
+    //   controller.update(id)
   }
 
 }

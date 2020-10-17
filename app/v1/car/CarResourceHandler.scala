@@ -52,8 +52,8 @@ class CarResourceHandler @Inject()(
     }
   }
 
-  def find(implicit mc: MarkerContext): Future[Iterable[CarResource]] = {
-    carRepository.list().map { carDataList =>
+  def find(attr: String)(implicit mc: MarkerContext): Future[Iterable[CarResource]] = {
+    carRepository.list(attr).map { carDataList =>
       carDataList.map(carData => createCarResource(carData))
     }
   }
@@ -65,6 +65,15 @@ class CarResourceHandler @Inject()(
       None
     }
   }
+
+  // def update(id: String, carUpdate: CarFromUpdate)(
+  //     implicit mc: MarkerContext): Future[Option[CarResource]] = {
+  //   val data = CarUpdate(UUID.fromString(id), carUpdate.title, carUpdate.price, carUpdate.fuel, carUpdate.isnew, carUpdate.mileage, carUpdate.first_registration)
+  //   val carFuture = carRepository.update(UUID.fromString(id), data)
+  //   carFuture.map{ id =>
+  //     createCarResource(data)
+  //   }
+  // }
 
   private def createCarResource(c: CarData): CarResource = {
     CarResource(c.id.toString(), c.title, c.fuel.toString(), c.price.toString(), c.isnew.toString(), c.mileage, c.first_registration)
