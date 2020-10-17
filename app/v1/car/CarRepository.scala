@@ -13,7 +13,7 @@ import scala.concurrent.Future
 import scala.collection.mutable
 
 
-final case class CarData(id: UUID, title: String, fuel: Int, price: Int, isnew: Boolean, mileage: Option[Int], first_registration: Option[Date])
+case class CarData(id: UUID, var title: String, var fuel: Int, var price: Int, var isnew: Boolean, var mileage: Option[Int], var first_registration: Option[Date])
 final case class CarUpdate(id: UUID, title: Option[String], fuel: Option[Int], price: Option[Int], isnew: Option[Boolean], mileage: Option[Int], first_registration: Option[Date])
 
 class CarExecutionContext @Inject()(actorSystem: ActorSystem)
@@ -25,13 +25,13 @@ class CarExecutionContext @Inject()(actorSystem: ActorSystem)
 trait CarRepository {
   def create(data: CarData)(implicit mc: MarkerContext): Future[UUID]
 
-  def list(attr: String)(implicit mc: MarkerContext): Future[Iterable[CarData]]
+  def list(attr: String)(implicit mc: MarkerContext): Future[Iterable[CarData]] 
 
   def get(id: UUID)(implicit mc: MarkerContext): Future[Option[CarData]]
 
   def delete(id: UUID)(implicit mc: MarkerContext): Future[Iterable[CarData]]
 
-  // def update(id:UUID)(implicit mc: MarkerContext): Future[Option[CarData]]
+  def update(id:UUID, data: CarUpdate)(implicit mc: MarkerContext): Future[Option[CarData]]
 }
 
 /**
@@ -95,11 +95,33 @@ class CarRepositoryImpl @Inject()()(implicit ec: CarExecutionContext)
     }
   }
 
-  // override def update(id:UUID, data: CarData)(implicit mc: MarkerContext): Future[Option[CarData]] = {
-  //   Future {
-  //     logger.trace(s"update: id = $id")
-  //     val car = carList.find(car => car.id == id)   
-  //     carList.replace(carList.indexOf(car), data)
-  //   }
-  // }
+  override def update(id:UUID, data: CarUpdate)(implicit mc: MarkerContext): Future[Option[CarData]] = {
+    Future {
+      logger.trace(s"update: id = $id")
+      val car = carList.find(car => car.id == id).getOrElse(throw new RuntimeException("No such car to be modified!"))
+      val index = carList.indexOf(car)
+      if ( data.title != None) {
+        car.title = data.title.get
+      }
+      if ( data.fuel != None) {
+        car.fuel = data.fuel.get
+      }
+      if ( data.price != None) {
+        car.price = data.price.get
+      }
+      if ( data.isnew != None) {
+        if ( data.isnew.get == true) {
+          car.mileage = None
+          car.first_registration = None
+        } else {
+          car.mileage = data.mileage
+          car.first_registration = data.first_registration
+        }
+      }
+      
+
+      carList.update(index, car)
+      Some(car)
+    }
+  }
 }

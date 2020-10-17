@@ -44,27 +44,35 @@ class CarController @Inject()(cc: CarControllerComponents)(
     )
   }
 
-  // private val updateform: Form[CarFromUpdate] = {
-  //   import play.api.data.Forms._
+  private val updateform: Form[CarFromUpdate] = {
+    import play.api.data.Forms._
 
-  //     Form(
-  //     mapping(
-  //       "title" -> optional(text),
-  //       "fuel" -> optional(number), 
-  //       "price" -> optional(number),          
-  //       "isnew" -> optional(boolean).verifying(value => if(value.isDefined) value = ),
-  //       "mileage" -> optional(number),
-  //       "first_registration" -> optional(date).verifying("Invalid Date", date => true),
-  //     )(CarFromUpdate.apply _)(CarFromUpdate.unapply _)
-  //     .verifying(
-  //       "Mileage is required for used car.",
-  //       form => if(!form.isnew) form.mileage.isDefined else true
-  //     ).verifying(
-  //       "First registration is required for used car.",
-  //       form => if(!form.isnew) form.first_registration.isDefined else true
-  //     )
-  //   ) 
-  // }
+      Form(
+      mapping(
+        "title" -> optional(text),
+        "fuel" -> optional(number), 
+        "price" -> optional(number),          
+        "isnew" -> optional(boolean),
+        "mileage" -> optional(number),
+        "first_registration" -> optional(date).verifying("Invalid Date", date => true),
+      )(CarFromUpdate.apply _)(CarFromUpdate.unapply _)
+      .verifying(
+        "Mileage is required for used car.",
+        updateform => if(updateform.isnew != None){
+          if(!updateform.isnew.get) updateform.mileage.isDefined else true
+        } else {
+          true
+        }
+      ).verifying(
+        "First registration is required for used car.",
+        updateform => if(updateform.isnew != None){
+          if(!updateform.isnew.get) updateform.first_registration.isDefined else true
+        } else {
+          true
+        }
+      )
+    ) 
+  }
 
   def show(id: String): Action[AnyContent] = CarAction.async {
   implicit request =>
@@ -98,12 +106,10 @@ class CarController @Inject()(cc: CarControllerComponents)(
     }
   }
 
-  // def update(id: String): Action[AnyContent] = CarAction.async { implicit request =>
-  //   logger.trace("update: id = $id")
-  //   carResourceHandler.update(id).map { car =>
-  //     updateJsonCar()
-  //   }
-  // }
+  def update(id: String): Action[AnyContent] = CarAction.async { implicit request =>
+    logger.trace("update: id = $id")
+      updateJsonCar(id)
+  }
 
   private def processJsonCar[A]()(
       implicit request: CarRequest[A]): Future[Result] = {
@@ -120,18 +126,18 @@ class CarController @Inject()(cc: CarControllerComponents)(
     form.bindFromRequest().fold(failure, success)
   }
 
-//   private def updateJsonCar[A]()(
-//     implicit request: CarRequest[A]): Future[Result] = {
-//   def failure(badForm: Form[CarFromUpdate]) = {
-//     Future.successful(BadRequest(badForm.errorsAsJson))
-//   }
+  private def updateJsonCar[A](id : String)(
+    implicit request: CarRequest[A]): Future[Result] = {
+  def failure(badForm: Form[CarFromUpdate]) = {
+    Future.successful(BadRequest(badForm.errorsAsJson))
+  }
 
-//   def success(input: CarFromUpdate) = {
-//     carResourceHandler.update(input).map { car =>
-//       Ok(Json.toJson(car))
-//     }
-//   }
+  def success(input: CarFromUpdate) = {
+    carResourceHandler.update(id, input).map { car =>
+      Ok(Json.toJson(car))
+    }
+  }
 
-//   form.bindFromRequest().fold(failure, success)
-// }
+  updateform.bindFromRequest().fold(failure, success)
+}
 }

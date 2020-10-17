@@ -66,14 +66,16 @@ class CarResourceHandler @Inject()(
     }
   }
 
-  // def update(id: String, carUpdate: CarFromUpdate)(
-  //     implicit mc: MarkerContext): Future[Option[CarResource]] = {
-  //   val data = CarUpdate(UUID.fromString(id), carUpdate.title, carUpdate.price, carUpdate.fuel, carUpdate.isnew, carUpdate.mileage, carUpdate.first_registration)
-  //   val carFuture = carRepository.update(UUID.fromString(id), data)
-  //   carFuture.map{ id =>
-  //     createCarResource(data)
-  //   }
-  // }
+  def update(id: String, carUpdate: CarFromUpdate)(
+      implicit mc: MarkerContext): Future[Option[CarResource]] = {
+    val data = CarUpdate(UUID.fromString(id), carUpdate.title, carUpdate.price, carUpdate.fuel, carUpdate.isnew, carUpdate.mileage, carUpdate.first_registration)
+    val carFuture = carRepository.update(UUID.fromString(id), data)
+    carFuture.map { maybeCarData => 
+      maybeCarData.map { carData =>
+        createCarResource(carData)
+    }
+  }
+}
 
   private def createCarResource(c: CarData): CarResource = {
     CarResource(c.id.toString(), c.title, c.fuel.toString(), c.price.toString(), c.isnew.toString(), c.mileage, c.first_registration)

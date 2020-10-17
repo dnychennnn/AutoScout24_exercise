@@ -31,8 +31,8 @@ class CarRouter @Inject()(controller: CarController) extends SimpleRouter {
     case DELETE(p"/$id") =>
       controller.delete(id)
 
-    // case PUT(p"/$id") =>
-    //   controller.update(id)
+    case PUT(p"/$id") =>
+      controller.update(id)
   }
 
 }
