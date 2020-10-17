@@ -25,7 +25,8 @@ Service should:
 This solution is backboned by Scala Play REST API example. Some key features regarding the solution is described as follows,
 
 ### Solved
-1. Local storage is a mock DB class `CarRespository` with a `CarResourceHandler` for data I/O
+1. Local storage is a mock DB class `CarRespository` with a `CarResourceHandler` for data I/O, with 5 car examples listed
+    ![samples](imgs/sample_cars.png)
     - shortage: 
         - data in RAM not in disk
         - didn't practice Amazon Dynamo DB or any other kinds.
@@ -104,5 +105,7 @@ http --verbose POST http://localhost:9000/v1/cars title="abc" fuel=0 price=12341
 http --verbose DELETE http://localhost:9000/v1/cars/"77144954-beff-410b-9dff-a39e259a2ac0"
 ```
 
-**MODIFY**
-Pass
+**MODIFY car advert** : Modify car advert through **id** with PUT request,
+```bash
+http --verbose PUT http://localhost:9000/v1/cars/$id title="Porsche Cayann"
+```
