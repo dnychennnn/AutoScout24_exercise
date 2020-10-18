@@ -32,9 +32,7 @@ This solution is backboned by Scala Play REST API example. Some key features reg
         - didn't practice Amazon Dynamo DB or any other kinds.
     - improvements: 
         - data storage using ListBuffer, some other data structure like heap or tree like can be considered.
-2. Data fields: mostly using primitive types
-    - improvements: 
-        - How to properly use DateTime in Scala? (Didn't try joda)
+2. Data fields: mostly using primitive types, with Date using java.utils.Date.
 3. APIs are implemented following MVC structure, where `CarController` describes all of the features
     - validation: using play **Form** with verifying to check the used car dependencies.
     - improvements:
