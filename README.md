@@ -26,7 +26,7 @@ This solution is backboned by Scala Play REST API example. Some key features reg
 
 ### Solved
 1. Local storage is a mock DB class `CarRespository` with a `CarResourceHandler` for data I/O, with 5 car examples listed
-    ![samples](imgs/sample_cars.png)
+![samples](imgs/sample_cars.png)
     - shortage: 
         - data in RAM not in disk
         - didn't practice Amazon Dynamo DB or any other kinds.
