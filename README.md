@@ -26,27 +26,31 @@ This solution is backboned by Scala Play REST API example. Some key features reg
 
 ### Solved
 1. Local storage is a mock DB class `CarRespository` with a `CarResourceHandler` for data I/O, with 5 car examples listed
-    ![samples](imgs/sample_cars.png)
+![samples](imgs/sample_cars.png)
     - shortage: 
         - data in RAM not in disk
         - didn't practice Amazon Dynamo DB or any other kinds.
     - improvements: 
         - data storage using ListBuffer, some other data structure like heap or tree like can be considered.
-2. Data fields: mostly using primitive types
-    - improvements: 
-        - How to properly use DateTime in Scala? (Didn't try joda)
+2. Data fields: mostly using primitive types, with Date using java.utils.Date.
 3. APIs are implemented following MVC structure, where `CarController` describes all of the features
     - validation: using play **Form** with verifying to check the used car dependencies.
     - improvements:
         - For modify API, how to correctly use option which also impose constraint to other field?
         - **modify**: use var for case class(not suggested for case class to be mutable), a better way?
- 
-    
-### Future work
 
-1. CORS
-2. test
-3. Amazon Dynamo DB
+4. CORS request handling directly using cors filter from play. More customized way could be studied.
+ 
+
+### Total Time Spent
+- Thursday [1700 - 1800] : Studied Scala, play, and review web fundamntals.
+- Friday [1300 - 1700] & Saturday [1300 - 1600] : Implementing.
+- Sunday [1200 - 1300] : Did a bit more on CORS and decided to hand in.
+- Total: 9 hrs
+
+### Future work
+1. test
+2. Amazon Dynamo DB
 
 
 ## Installation & Running
@@ -54,6 +58,15 @@ This solution is backboned by Scala Play REST API example. Some key features reg
 ### Requirements
 - java higher than 8
 - sbt
+
+### Installation
+
+Install the projects.
+
+```bash
+git clone https://github.com/dnychennnn/AutoScout24_exercise.git
+cd AutoScout24_exercise/
+```
 
 You need to download and install sbt for this application to run.
 

@@ -17,7 +17,7 @@ import play.api.data.format.Formats.dateFormat
 /**
   * DTO for displaying car information.
   */
-case class CarResource(id: String, title: String, fuel: String, price: String, isnew: String, mileage: Option[Int], first_registration: Option[Date])
+case class CarResource(id: String, title: String, fuel: String, price: String, isnew: String, mileage: String, first_registration: String)
 
 object CarResource {
   /**
@@ -78,7 +78,18 @@ class CarResourceHandler @Inject()(
 }
 
   private def createCarResource(c: CarData): CarResource = {
-    CarResource(c.id.toString(), c.title, c.fuel.toString(), c.price.toString(), c.isnew.toString(), c.mileage, c.first_registration)
+
+    // handle date format pattern
+    val pattern = "yyyy-MM-dd"
+    val simpleDateFormat = new SimpleDateFormat(pattern)
+    var dateString: String = null
+    val first_registration = c.first_registration
+    first_registration match {
+      case Some(first_registration) => dateString = simpleDateFormat.format(first_registration)
+      case None => dateString = "None"
+    }
+
+    CarResource(c.id.toString(), c.title, c.fuel.toString(), c.price.toString(), c.isnew.toString(), c.mileage.getOrElse(None).toString(), dateString)
   }
 
 }
