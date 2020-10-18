@@ -118,8 +118,7 @@ class CarRepositoryImpl @Inject()()(implicit ec: CarExecutionContext)
           car.first_registration = data.first_registration
         }
       }
-      
-
+    
       carList.update(index, car)
       Some(car)
     }
