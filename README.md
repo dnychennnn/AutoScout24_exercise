@@ -40,13 +40,13 @@ This solution is backboned by Scala Play REST API example. Some key features reg
     - improvements:
         - For modify API, how to correctly use option which also impose constraint to other field?
         - **modify**: use var for case class(not suggested for case class to be mutable), a better way?
+
+4. CORS request handling directly using cors filter from play. More customized way could be studied.
  
     
 ### Future work
-
-1. CORS
-2. test
-3. Amazon Dynamo DB
+1. test
+2. Amazon Dynamo DB
 
 
 ## Installation & Running
@@ -54,6 +54,15 @@ This solution is backboned by Scala Play REST API example. Some key features reg
 ### Requirements
 - java higher than 8
 - sbt
+
+### Installation
+
+Install the projects.
+
+```bash
+git clone https://github.com/dnychennnn/AutoScout24_exercise.git
+cd AutoScout24_exercise/
+```
 
 You need to download and install sbt for this application to run.
 
