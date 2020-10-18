@@ -41,7 +41,13 @@ This solution is backboned by Scala Play REST API example. Some key features reg
 
 4. CORS request handling directly using cors filter from play. More customized way could be studied.
  
-    
+
+### Total Time Spent
+- Thursday [1700 - 1800] : Studied Scala, play, and review web fundamntals.
+- Friday [1300 - 1700] & Saturday [1300 - 1600] : Implementing.
+- Sunday [1200 - 1300] : Did a bit more on CORS and decided to hand in.
+- Total: 9 hrs
+
 ### Future work
 1. test
 2. Amazon Dynamo DB
